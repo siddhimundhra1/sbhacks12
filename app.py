@@ -13,12 +13,23 @@ def send_message():
     data = request.json
     text = data.get("text", "")
     print ("Text Received", flush=True)
-    gemini_response = gemini_prompt(text)
+    gemini_response = gemini_prompt("Respond to this prompt like it's a text. Keep it concise (~200 chars max):\n"+text)
     print ("Gemini Responded", flush=True)
     return jsonify({
         "reply": gemini_response
     })
 
+
+@app.route("/summary", methods=["POST"])
+def sum_message():
+    data = request.json
+    text = data.get("text", "")
+    print ("Text Received", flush=True)
+    gemini_response = gemini_prompt("Give the important points from this transcript only:\n"+text)
+    print ("Gemini Responded", flush=True)
+    return jsonify({
+        "reply": gemini_response
+    })
 
 def gemini_prompt(prompt):
     api_key = os.getenv("GEMINI_KEY")
@@ -46,4 +57,3 @@ def gemini_prompt(prompt):
 
 if __name__ == "__main__":
     app.run(port=5000)
-
