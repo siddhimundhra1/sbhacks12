@@ -39,8 +39,8 @@
     recognition.onresult = (event) => {
       const transcript = event.results[event.results.length - 1][0].transcript;
       transcriptBuffer += transcript + " ";
-      outputDiv.innerHTML += "<div><b>Recording:</b> " + transcript + "</div>";
-      outputDiv.scrollTop = outputDiv.scrollHeight;
+      //outputDiv.innerHTML += "<div><b>Recording:</b> " + transcript + "</div>";
+      //outputDiv.scrollTop = outputDiv.scrollHeight;
     };
 
     recognition.onstart = () => {
@@ -62,15 +62,39 @@
     stopVoiceBtn.disabled = true;
 
     // -------------------- Send transcript every 30 seconds --------------------
-    setInterval(() => {
-      if (transcriptBuffer.trim() === "") return;
-      fetch("http://127.0.0.1:5000/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: transcriptBuffer })
-      });
-      transcriptBuffer = ""; // clear buffer after sending
-    }, 30000);
+    setInterval(async () => {
+  if (transcriptBuffer.trim() === "") return;
+
+  try {
+    const res = await fetch("http://127.0.0.1:5000/summary", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: transcriptBuffer })
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      outputDiv.innerHTML += `<div><b>Summary Error:</b> ${text}</div>`;
+      return;
+    }
+
+    const data = await res.json();
+
+    outputDiv.innerHTML += `
+      <div style="margin-top:8px;">
+        <b>Gemini:</b>
+        <div>${data.reply}</div>
+      </div>
+    `;
+
+    outputDiv.scrollTop = outputDiv.scrollHeight;
+    transcriptBuffer = ""; // clear only after successful summary
+
+  } catch (err) {
+    outputDiv.innerHTML += `<div><b>Summary Error:</b> ${err}</div>`;
+  }
+}, 15000);
+
 
     // -------------------- User manual message --------------------
     sendBtn.addEventListener("click", async () => {
@@ -105,4 +129,3 @@
   </script>
 </body>
 </html>
-
