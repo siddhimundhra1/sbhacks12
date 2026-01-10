@@ -13,7 +13,6 @@
   <h2>Passing Notes</h2>
   <div id="output"></div>
 
-  <!-- Voice control buttons -->
   <button id="startVoiceBtn">Start Recording</button>
   <button id="stopVoiceBtn">Stop Recording</button>
   <br><br>
@@ -37,95 +36,119 @@
     let isRecording = false;
 
     recognition.onresult = (event) => {
-      const transcript = event.results[event.results.length - 1][0].transcript;
-      transcriptBuffer += transcript + " ";
-      //outputDiv.innerHTML += "<div><b>Recording:</b> " + transcript + "</div>";
-      //outputDiv.scrollTop = outputDiv.scrollHeight;
-    };
+  let newText = "";
 
-    recognition.onstart = () => {
-      isRecording = true;
-      startVoiceBtn.disabled = true;
-      stopVoiceBtn.disabled = false;
-    };
+  for (let i = event.resultIndex; i < event.results.length; i++) {
+    if (event.results[i].isFinal) {
+      newText += event.results[i][0].transcript + " ";
+    }
+  }
+
+  transcriptBuffer += newText;
+};
+
+
+    recognition.onstart = () => {};
 
     recognition.onend = () => {
-      isRecording = false;
-      startVoiceBtn.disabled = false;
-      stopVoiceBtn.disabled = true;
+      if (isRecording) {
+        setTimeout(() => {
+          try {
+            recognition.start();
+          } catch (e) {
+            console.warn("Restart failed:", e);
+          }
+        }, 200);
+      } else {
+        startVoiceBtn.disabled = false;
+        stopVoiceBtn.disabled = true;
+      }
     };
 
-    startVoiceBtn.addEventListener("click", () => recognition.start());
-    stopVoiceBtn.addEventListener("click", () => recognition.stop());
+    startVoiceBtn.addEventListener("click", () => {
+      if (isRecording) return;
+      isRecording = true;
+      recognition.start();
+      startVoiceBtn.disabled = true;
+      stopVoiceBtn.disabled = false;
+    });
 
-    // Initially disable Stop button
+    stopVoiceBtn.addEventListener("click", () => {
+      isRecording = false;
+      recognition.stop();
+      sendSummary(); // flush remaining transcript immediately
+    });
+
     stopVoiceBtn.disabled = true;
 
-    // -------------------- Send transcript every 30 seconds --------------------
-    setInterval(async () => {
-  if (transcriptBuffer.trim() === "") return;
+    // -------------------- Summary sender (shared) --------------------
+    async function sendSummary() {
+      if (transcriptBuffer.trim() === "") return;
 
-  try {
-    const res = await fetch("http://127.0.0.1:5000/summary", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: transcriptBuffer })
-    });
+      try {
+        const res = await fetch("http://127.0.0.1:5000/summary", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: transcriptBuffer })
+        });
 
-    if (!res.ok) {
-      const text = await res.text();
-      outputDiv.innerHTML += `<div><b>Summary Error:</b> ${text}</div>`;
-      return;
+        if (!res.ok) {
+          const text = await res.text();
+          outputDiv.innerHTML += `<div><b>Summary Error:</b> ${text}</div>`;
+          return;
+        }
+
+        const data = await res.json();
+
+        outputDiv.innerHTML += `
+          <div style="margin-top:8px;">
+            <b>Gemini:</b>
+            <div>${data.reply}</div>
+          </div>
+        `;
+
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+        transcriptBuffer = ""; // clear after successful summary
+
+      } catch (err) {
+        outputDiv.innerHTML += `<div><b>Summary Error:</b> ${err}</div>`;
+      }
     }
 
-    const data = await res.json();
+    // -------------------- Auto-summary every 60 seconds --------------------
+    setInterval(() => {
+      sendSummary();
+    }, 60000);
 
-    outputDiv.innerHTML += `
-      <div style="margin-top:8px;">
-        <b>Gemini:</b>
-        <div>${data.reply}</div>
-      </div>
-    `;
-
-    outputDiv.scrollTop = outputDiv.scrollHeight;
-    transcriptBuffer = ""; // clear only after successful summary
-
-  } catch (err) {
-    outputDiv.innerHTML += `<div><b>Summary Error:</b> ${err}</div>`;
-  }
-}, 15000);
-
-
-    // -------------------- User manual message --------------------
+    // -------------------- Manual chat messages --------------------
     sendBtn.addEventListener("click", async () => {
-  const msg = messageInput.value.trim();
-  if (!msg) return;
+      const msg = messageInput.value.trim();
+      if (!msg) return;
 
-  outputDiv.innerHTML += `<div><b>You:</b> ${msg}</div>`;
-  messageInput.value = "";
+      outputDiv.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+      messageInput.value = "";
 
-  try {
-    const res = await fetch("http://127.0.0.1:5000/send", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: msg })
+      try {
+        const res = await fetch("http://127.0.0.1:5000/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: msg })
+        });
+
+        if (!res.ok) {
+          const text = await res.text();
+          outputDiv.innerHTML += `<div><b>Error:</b> ${text}</div>`;
+          return;
+        }
+
+        const data = await res.json();
+        outputDiv.innerHTML += `<div><b>Gemini:</b> ${data.reply}</div>`;
+      } catch (err) {
+        outputDiv.innerHTML += `<div><b>Error:</b> ${err}</div>`;
+      }
+
+      outputDiv.scrollTop = outputDiv.scrollHeight;
     });
-
-    if (!res.ok) {
-      const text = await res.text();
-      outputDiv.innerHTML += `<div><b>Error:</b> ${text}</div>`;
-      return;
-    }
-
-    const data = await res.json();
-    outputDiv.innerHTML += `<div><b>Gemini:</b> ${data.reply}</div>`;
-  } catch (err) {
-    outputDiv.innerHTML += `<div><b>Error:</b> ${err}</div>`;
-  }
-
-  outputDiv.scrollTop = outputDiv.scrollHeight;
-});
-
   </script>
 </body>
 </html>
