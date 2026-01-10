@@ -431,12 +431,14 @@
     });
 
     stopVoiceBtn.addEventListener("click", () => {
-      isRecording = false;
-      recognition.stop();
-      startVoiceBtn.disabled = false;
-      stopVoiceBtn.disabled = true;
-      sendSummary();
-    });
+    isRecording = false;
+    recognition.stop();
+    startVoiceBtn.disabled = false;
+    stopVoiceBtn.disabled = true;
+    sendSummary();
+    generateQuiz(transcriptBuffer); 
+});
+
 
     // -------------------- Summary sender --------------------
     async function sendSummary() {
@@ -473,12 +475,76 @@
       }
     }
 
+
+// -------------------- Quiz Creator --------------------
+    async function generateQuiz(transcript) {
+  if (!transcript.trim()) return;
+
+  showTypingIndicator(true);
+
+  try {
+    const res = await fetch("http://127.0.0.1:5000/quiz", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: transcript })
+    });
+
+    showTypingIndicator(false);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+
+    if (data.error) {
+      addMessage("Quiz generation failed: " + data.error, false);
+      console.error(data);
+      return;
+    }
+
+    addMessage("📚 Here's a quiz from the transcript!", false);
+
+    // Render quiz
+    data.quiz.forEach((q, idx) => {
+      const questionDiv = document.createElement("div");
+      questionDiv.className = "ai-message";
+      questionDiv.style.marginBottom = "12px";
+
+      const qText = document.createElement("div");
+      qText.textContent = `Q${idx + 1}: ${q.question}`;
+      questionDiv.appendChild(qText);
+
+      q.options.forEach(option => {
+        const btn = document.createElement("button");
+        btn.textContent = option;
+        btn.style.margin = "4px";
+        btn.addEventListener("click", () => {
+          if (option === q.answer) {
+            btn.style.backgroundColor = "#4CAF50"; // correct
+          } else {
+            btn.style.backgroundColor = "#f44336"; // wrong
+          }
+        });
+        questionDiv.appendChild(btn);
+      });
+
+      chatMessages.appendChild(questionDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+
+  } catch (err) {
+    showTypingIndicator(false);
+    addMessage(`Error generating quiz: ${err.message}`, false);
+    console.error(err);
+  }
+}
+
+
+
     // -------------------- Auto-summary every 60 seconds --------------------
     setInterval(() => {
       if (transcriptBuffer.trim() && isRecording) {
         sendSummary();
       }
-    }, 60000);
+    }, 30000);
 
     // -------------------- Manual chat messages --------------------
     async function sendMessage() {
