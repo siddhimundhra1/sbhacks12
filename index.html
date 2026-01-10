@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Voice Chat / Transcription</title>
+  <title>Passing Notes</title>
   <style>
     body { font-family: sans-serif; padding: 16px; }
     #output { border: 1px solid #ccc; padding: 8px; height: 300px; overflow-y: auto; }
@@ -10,7 +10,7 @@
   </style>
 </head>
 <body>
-  <h2>Voice Chat</h2>
+  <h2>Passing Notes</h2>
   <div id="output"></div>
 
   <!-- Voice control buttons -->
@@ -64,7 +64,7 @@
     // -------------------- Send transcript every 30 seconds --------------------
     setInterval(() => {
       if (transcriptBuffer.trim() === "") return;
-      fetch("http://localhost:5000/send", {
+      fetch("http://127.0.0.1:5000/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: transcriptBuffer })
@@ -73,18 +73,35 @@
     }, 30000);
 
     // -------------------- User manual message --------------------
-    sendBtn.addEventListener("click", () => {
-      const msg = messageInput.value.trim();
-      if (!msg) return;
-      outputDiv.innerHTML += "<div><b>You:</b> " + msg + "</div>";
-      messageInput.value = "";
+    sendBtn.addEventListener("click", async () => {
+  const msg = messageInput.value.trim();
+  if (!msg) return;
 
-      fetch("http://localhost:5000/send", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: msg })
-      });
+  outputDiv.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+  messageInput.value = "";
+
+  try {
+    const res = await fetch("http://127.0.0.1:5000/send", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text: msg })
     });
+
+    if (!res.ok) {
+      const text = await res.text();
+      outputDiv.innerHTML += `<div><b>Error:</b> ${text}</div>`;
+      return;
+    }
+
+    const data = await res.json();
+    outputDiv.innerHTML += `<div><b>Gemini:</b> ${data.reply}</div>`;
+  } catch (err) {
+    outputDiv.innerHTML += `<div><b>Error:</b> ${err}</div>`;
+  }
+
+  outputDiv.scrollTop = outputDiv.scrollHeight;
+});
+
   </script>
 </body>
 </html>
