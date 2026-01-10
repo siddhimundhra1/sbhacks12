@@ -25,7 +25,7 @@ def sum_message():
     data = request.json
     text = data.get("text", "")
     print ("Text Received", flush=True)
-    gemini_response = gemini_prompt("Give the important points from this transcript only:\n"+text)
+    gemini_response = gemini_prompt("Respond to this transcript like it's a text. Give all important points:\n"+text)
     print ("Gemini Responded", flush=True)
     return jsonify({
         "reply": gemini_response
