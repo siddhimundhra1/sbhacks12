@@ -1,16 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import os
 import requests
 from dotenv import load_dotenv
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static")
 CORS(app)
 load_dotenv()
 
 OPENROUTER_KEY = os.getenv("OPENROUTER_API_KEY")
 
 OPENROUTER_MODEL = "openai/gpt-4o-mini"  # cheapest solid model
+
+
+@app.route("/")
+def index():
+    return send_from_directory("static", "index.html")
 
 def openrouter_prompt(prompt):
     try:
