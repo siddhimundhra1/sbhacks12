@@ -10,6 +10,7 @@
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
     }
     
     body {
@@ -19,22 +20,32 @@
         radial-gradient(#e0d3b8 1px, transparent 1px);
       background-size: 40px 40px;
       background-position: 0 0, 20px 20px;
-      height: 100vh;
+      min-height: 100vh;
+      height: 100dvh; /* Use dynamic viewport height for mobile */
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 10px;
       font-family: 'Caveat', cursive;
+      touch-action: manipulation;
+    }
+    
+    .app-container {
+      width: 100%;
+      max-width: 600px;
+      height: 100%;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
     
     .notes-container {
-      width: 100%;
-      max-width: 600px;
-      height: 85vh;
+      flex: 1;
       background: #fffef0;
-      border-radius: 5px;
+      border-radius: 12px;
       box-shadow: 
-        0 10px 30px rgba(0, 0, 0, 0.15),
+        0 6px 20px rgba(0, 0, 0, 0.1),
         inset 0 0 0 1px rgba(255, 255, 255, 0.8);
       display: flex;
       flex-direction: column;
@@ -48,14 +59,14 @@
       content: '';
       position: absolute;
       top: 0;
-      left: 60px;
+      left: 40px;
       right: 0;
       bottom: 0;
       background: repeating-linear-gradient(
         #fffef0,
-        #fffef0 28px,
-        #e0e0e0 28px,
-        #e0e0e0 29px
+        #fffef0 24px,
+        #e0e0e0 24px,
+        #e0e0e0 25px
       );
       pointer-events: none;
       opacity: 0.3;
@@ -65,56 +76,62 @@
     .notes-header {
       background: linear-gradient(to bottom, #8b7355, #6d5c42);
       color: #fffef0;
-      padding: 15px 20px;
+      padding: 12px 15px;
       text-align: center;
       position: relative;
       z-index: 1;
       border-bottom: 2px solid #5a4a34;
+      flex-shrink: 0;
     }
     
     .notes-header h2 {
       font-family: 'Shadows Into Light', cursive;
-      font-size: 1.8rem;
+      font-size: 1.4rem;
       font-weight: 700;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
       text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
     
     .notes-header .status {
       font-family: 'Indie Flower', cursive;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       opacity: 0.9;
       margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     .notes-content {
       flex: 1;
-      padding: 20px;
+      padding: 15px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      gap: 15px;
       position: relative;
       z-index: 1;
       background: transparent;
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
     
     .note {
       max-width: 85%;
-      padding: 15px 20px;
-      line-height: 1.5;
-      font-size: 1.3rem;
+      padding: 12px 15px;
+      line-height: 1.4;
+      font-size: 1.1rem;
       position: relative;
       animation: slideIn 0.4s ease;
       word-wrap: break-word;
-      border-radius: 3px;
+      word-break: break-word;
+      border-radius: 8px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
       transform: rotate(-0.5deg);
       transition: transform 0.2s ease;
     }
     
-    .note:hover {
-      transform: rotate(0deg) scale(1.01);
+    .note:active {
+      transform: scale(0.98) rotate(0deg);
     }
     
     @keyframes slideIn {
@@ -135,13 +152,9 @@
       border: 1px solid #bbdefb;
       transform: rotate(0.5deg);
       font-family: 'Nanum Pen Script', cursive;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       color: #1565c0;
       box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
-    }
-    
-    .user-note:hover {
-      transform: rotate(0deg) scale(1.01);
     }
     
     .ai-note {
@@ -150,24 +163,24 @@
       border-top-left-radius: 0;
       border: 1px solid #ffecb3;
       font-family: 'Gochi Hand', cursive;
-      font-size: 1.35rem;
+      font-size: 1.15rem;
       color: #5d4037;
       box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     }
     
     .note-content {
-      margin-bottom: 8px;
-      line-height: 1.8;
+      margin-bottom: 6px;
+      line-height: 1.6;
     }
     
     .note-meta {
       font-family: 'Indie Flower', cursive;
-      font-size: 0.9rem;
+      font-size: 0.8rem;
       opacity: 0.7;
       text-align: right;
       border-top: 1px dashed rgba(0, 0, 0, 0.1);
-      padding-top: 5px;
-      margin-top: 5px;
+      padding-top: 4px;
+      margin-top: 4px;
     }
     
     .note-meta::before {
@@ -178,38 +191,39 @@
     .note::before {
       content: '';
       position: absolute;
-      width: 10px;
-      height: 10px;
+      width: 8px;
+      height: 8px;
       background: radial-gradient(circle, #fff, #ccc, #999);
       border-radius: 50%;
-      top: 10px;
+      top: 8px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
     
     .user-note::before {
-      right: 10px;
+      right: 8px;
       background: radial-gradient(circle, #bbdefb, #64b5f6, #1976d2);
     }
     
     .ai-note::before {
-      left: 10px;
+      left: 8px;
       background: radial-gradient(circle, #ffecb3, #ffd54f, #ff9800);
     }
     
     .transcript-indicator {
       text-align: center;
       font-family: 'Indie Flower', cursive;
-      font-size: 1rem;
+      font-size: 0.9rem;
       color: #5d4037;
-      padding: 10px;
-      background: rgba(255, 255, 255, 0.9);
-      border-radius: 5px;
-      margin: 0 20px;
+      padding: 8px 10px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 6px;
+      margin: 0 10px;
       display: none;
       border: 1px dashed #8d6e63;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       position: relative;
       z-index: 2;
+      flex-shrink: 0;
     }
     
     .transcript-indicator.active {
@@ -226,28 +240,31 @@
       display: none;
       align-self: flex-start;
       background: rgba(255, 248, 225, 0.9);
-      padding: 15px 20px;
-      border-radius: 5px;
+      padding: 10px 15px;
+      border-radius: 6px;
       border: 1px solid #ffecb3;
-      margin-bottom: 10px;
+      margin-bottom: 5px;
       font-family: 'Gochi Hand', cursive;
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: #5d4037;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
     }
     
     .typing-indicator.active {
-      display: block;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
     .typing-dots {
       display: flex;
-      gap: 5px;
+      gap: 4px;
     }
     
     .typing-dots span {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       background: #8d6e63;
       border-radius: 50%;
       animation: handwritingTyping 1.4s infinite;
@@ -258,33 +275,35 @@
     
     @keyframes handwritingTyping {
       0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-8px); }
+      30% { transform: translateY(-6px); }
     }
     
     .input-area {
-      padding: 15px 20px;
+      padding: 12px 15px;
       background: rgba(255, 254, 240, 0.95);
       border-top: 2px solid #d4c9b1;
       display: flex;
-      gap: 10px;
+      gap: 8px;
       align-items: center;
       position: relative;
       z-index: 1;
       box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      flex-shrink: 0;
     }
     
     .note-input {
       flex: 1;
-      padding: 12px 15px;
+      padding: 10px 12px;
       border: 2px solid #d4c9b1;
-      border-radius: 5px;
+      border-radius: 8px;
       font-family: 'Nanum Pen Script', cursive;
-      font-size: 1.3rem;
+      font-size: 1.1rem;
       outline: none;
       background: #fffef7;
       color: #5d4037;
-      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05);
+      box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.05);
       transition: all 0.3s;
+      min-height: 44px; /* Minimum touch target size */
     }
     
     .note-input:focus {
@@ -302,6 +321,8 @@
       background: linear-gradient(to bottom, #8b7355, #6d5c42);
       color: #fffef0;
       border: none;
+      min-width: 44px;
+      min-height: 44px;
       width: 44px;
       height: 44px;
       border-radius: 50%;
@@ -309,43 +330,52 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
+      font-size: 1.2rem;
       transition: all 0.2s;
       font-family: 'Shadows Into Light', cursive;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-    }
-    
-    .send-button:hover {
-      transform: scale(1.1) rotate(5deg);
-      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+      touch-action: manipulation;
     }
     
     .send-button:active {
-      transform: scale(0.95);
+      transform: scale(0.9);
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
     }
     
     .voice-controls {
       display: flex;
       gap: 10px;
-      margin-top: 10px;
-      justify-content: center;
-      padding: 0 20px 15px;
+      padding: 10px 15px;
       background: rgba(255, 254, 240, 0.95);
       position: relative;
       z-index: 1;
+      flex-shrink: 0;
+      border-top: 1px solid #d4c9b1;
     }
     
     .voice-button {
-      padding: 10px 20px;
+      flex: 1;
+      padding: 12px;
       border: none;
       border-radius: 25px;
-      font-size: 1rem;
+      font-size: 0.9rem;
       cursor: pointer;
       transition: all 0.3s;
       font-family: 'Indie Flower', cursive;
       font-weight: bold;
-      letter-spacing: 0.5px;
+      letter-spacing: 0.3px;
       box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+      min-height: 44px;
+      touch-action: manipulation;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+    
+    .voice-button:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
     }
     
     .record-button {
@@ -362,7 +392,7 @@
     
     @keyframes pulse {
       0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
+      50% { transform: scale(1.03); }
       100% { transform: scale(1); }
     }
     
@@ -378,11 +408,6 @@
       transform: none !important;
     }
     
-    .voice-button:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
-    }
-    
     /* Quiz styling */
     .quiz-note {
       background: #f3e5f5;
@@ -395,31 +420,36 @@
     }
     
     .quiz-question {
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-weight: bold;
+      font-size: 1.1rem;
     }
     
     .quiz-options {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 10px;
+      gap: 6px;
+      margin-top: 8px;
     }
     
     .quiz-option {
-      padding: 8px 12px;
+      padding: 8px 10px;
       border: 1px solid #ba68c8;
-      border-radius: 3px;
+      border-radius: 6px;
       background: #f3e5f5;
       cursor: pointer;
       transition: all 0.2s;
       font-family: 'Nanum Pen Script', cursive;
-      font-size: 1.2rem;
+      font-size: 1rem;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      touch-action: manipulation;
     }
     
-    .quiz-option:hover {
+    .quiz-option:active {
       background: #e1bee7;
-      transform: translateX(5px);
+      transform: translateX(3px);
     }
     
     .quiz-option.correct {
@@ -436,17 +466,17 @@
     
     /* Scrollbar styling */
     .notes-content::-webkit-scrollbar {
-      width: 8px;
+      width: 6px;
     }
     
     .notes-content::-webkit-scrollbar-track {
       background: rgba(212, 201, 177, 0.3);
-      border-radius: 4px;
+      border-radius: 3px;
     }
     
     .notes-content::-webkit-scrollbar-thumb {
       background: linear-gradient(to bottom, #8b7355, #6d5c42);
-      border-radius: 4px;
+      border-radius: 3px;
     }
     
     .notes-content::-webkit-scrollbar-thumb:hover {
@@ -460,7 +490,7 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 15px;
+      height: 10px;
       background: linear-gradient(to right, 
         transparent 0%, 
         rgba(212, 201, 177, 0.5) 10%, 
@@ -469,113 +499,200 @@
       z-index: 1;
     }
     
-    /* Responsive adjustments */
+    .export-button {
+      width: 100%;
+      background: linear-gradient(to bottom, #4caf50, #2e7d32);
+      color: white;
+      border: none;
+      padding: 14px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-family: 'Indie Flower', cursive;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s;
+      min-height: 50px;
+      touch-action: manipulation;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    
+    .export-button:active {
+      transform: translateY(1px);
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.2);
+      background: linear-gradient(to bottom, #43a047, #1b5e20);
+    }
+    
+    /* Mobile-specific adjustments */
     @media (max-width: 768px) {
       body {
-        padding: 10px;
-        height: 100vh;
+        padding: 8px;
+        height: 100dvh;
+      }
+      
+      .app-container {
+        max-height: 95vh;
+        gap: 8px;
       }
       
       .notes-container {
-        height: 90vh;
-        max-width: 100%;
+        border-radius: 10px;
+      }
+      
+      .notes-header {
+        padding: 10px 12px;
+      }
+      
+      .notes-header h2 {
+        font-size: 1.3rem;
+      }
+      
+      .notes-header .status {
+        font-size: 0.75rem;
+      }
+      
+      .notes-content {
+        padding: 12px;
+        gap: 12px;
       }
       
       .note {
         max-width: 90%;
-        font-size: 1.2rem;
+        padding: 10px 12px;
+        font-size: 1rem;
+      }
+      
+      .user-note {
+        font-size: 1.1rem;
+      }
+      
+      .ai-note {
+        font-size: 1.05rem;
+      }
+      
+      .note-content {
+        line-height: 1.5;
+      }
+      
+      .input-area {
+        padding: 10px 12px;
+      }
+      
+      .note-input {
+        font-size: 1rem;
+        padding: 8px 10px;
       }
       
       .voice-controls {
+        padding: 8px 12px;
         flex-direction: column;
-        align-items: center;
       }
       
       .voice-button {
-        width: 100%;
-        max-width: 200px;
+        font-size: 0.85rem;
+        padding: 10px;
+      }
+      
+      .quiz-option {
+        padding: 8px;
+        font-size: 0.95rem;
+      }
+      
+      .export-button {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+        border-radius: 20px;
       }
     }
     
     @media (max-width: 480px) {
-      .notes-header h2 {
-        font-size: 1.5rem;
+      .notes-container::before {
+        left: 30px;
       }
       
       .note {
         max-width: 95%;
-        padding: 12px 15px;
       }
       
-      .note-input {
+      .notes-header h2 {
         font-size: 1.2rem;
-        padding: 10px 12px;
       }
       
-      .notes-container::before {
-        left: 40px;
+      .note-input::placeholder {
+        font-size: 0.9rem;
+      }
+      
+      .voice-button span {
+        display: none; /* Hide text on very small screens, show only icons */
+      }
+      
+      .voice-button::before {
+        content: attr(data-label);
+        font-size: 0.8rem;
+      }
+      
+      .record-button::before {
+        content: "🎤";
+      }
+      
+      .stop-button::before {
+        content: "⏹️";
       }
     }
+    
+    /* Landscape mode optimization */
+    @media (max-height: 500px) and (orientation: landscape) {
+      .app-container {
+        max-height: 85vh;
+      }
+      
+      .notes-header {
+        padding: 8px 10px;
+      }
+      
+      .notes-content {
+        padding: 8px;
+        gap: 8px;
+      }
+      
+      .note {
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+      
+      .input-area, .voice-controls {
+        padding: 8px 10px;
+      }
+      
+      .export-button {
+        padding: 10px;
+        min-height: 44px;
+      }
+    }
+    
+    /* Prevent text selection on interactive elements */
+    button, .quiz-option {
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    
 
-    /* Replace the .export-button style with this: */
-.export-button {
-  display: block;
-  width: 400px; /*calc(100% - 40px);*/
-  margin: 20px auto 25px;
-  background: linear-gradient(to bottom, #4caf50, #2e7d32);
-  color: white;
-  border: none;
-  padding: 12px 20px;
-  border-radius: 25px;
-  cursor: pointer;
-  font-family: 'Indie Flower', cursive;
-  font-size: 1.1rem;
-  font-weight: bold;
-  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-  transition: all 0.3s;
-  position: relative;
-  bottom: auto;
-  right: auto;
-}
-
-.export-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(to bottom, #66bb6a, #388e3c);
-}
-
-.export-button:active {
-  transform: translateY(0);
-}
-
-
-.app-container {
-  width: 100%;
-  max-width: 600px;
-  height: 85vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.notes-container {
-  flex: 1;
-  width: 100%;
-  max-width: 600px;
-  background: #fffef0;
-  border-radius: 5px;
-  box-shadow: 
-    0 10px 30px rgba(0, 0, 0, 0.15),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-  border: 1px solid #d4c9b1;
-}
-
-
-
+    
+    /* Hide scrollbar for cleaner mobile look */
+    @media (max-width: 768px) {
+      .notes-content::-webkit-scrollbar {
+        display: none;
+      }
+      
+      .notes-content {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    }
   </style>
 
 
@@ -1140,4 +1257,5 @@ document.getElementById("exportPdfBtn").addEventListener("click", () => {
   
 
 </body>
+</html>
 </html>
