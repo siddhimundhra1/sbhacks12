@@ -22,7 +22,7 @@ def openrouter_prompt(prompt):
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {OPENROUTER_KEY}",
-            "HTTP-Referer": "http://localhost:5000",  # required by OpenRouter
+            "HTTP-Referer": "https://passing-notes.onrender.com/",  # required by OpenRouter
             "X-Title": "Lecture Assistant"
         }
 
