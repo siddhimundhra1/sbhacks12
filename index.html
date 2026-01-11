@@ -516,49 +516,117 @@
         left: 40px;
       }
     }
+
+    /* Replace the .export-button style with this: */
+.export-button {
+  display: block;
+  width: 400px; /*calc(100% - 40px);*/
+  margin: 20px auto 25px;
+  background: linear-gradient(to bottom, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-family: 'Indie Flower', cursive;
+  font-size: 1.1rem;
+  font-weight: bold;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 10;
+  transition: all 0.3s;
+  position: relative;
+  bottom: auto;
+  right: auto;
+}
+
+.export-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(to bottom, #66bb6a, #388e3c);
+}
+
+.export-button:active {
+  transform: translateY(0);
+}
+
+
+.app-container {
+  width: 100%;
+  max-width: 600px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-container {
+  flex: 1;
+  width: 100%;
+  max-width: 600px;
+  background: #fffef0;
+  border-radius: 5px;
+  box-shadow: 
+    0 10px 30px rgba(0, 0, 0, 0.15),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.8);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid #d4c9b1;
+}
+
+
+
   </style>
+
+
 </head>
 <body>
-  <div class="notes-container">
-    <div class="notes-header">
-      <h2>📝 Passing Notes</h2>
-      <div class="status">Whispering with AI • Class is in session</div>
-    </div>
-    
-    <div class="transcript-indicator" id="transcriptIndicator">
-      ✏️ Recording lecture notes...
-    </div>
-    
-    <div class="notes-content" id="notesContent">
-      <!-- Notes will appear here -->
-      <div class="note ai-note">
-        <div class="note-content">
-          Hi there! I'm here to help you take notes. You can type questions or record your lecture, and I'll help summarize and quiz you on it. What would you like to chat about?
+  <div class="app-container">
+    <div class="notes-container">
+      <div class="notes-header">
+        <h2>📝 Passing Notes</h2>
+        <div class="status">Whispering with AI • Class is in session</div>
+      </div>
+      
+      <div class="transcript-indicator" id="transcriptIndicator">
+        ✏️ Recording lecture notes...
+      </div>
+      
+      <div class="notes-content" id="notesContent">
+        <div class="note ai-note">
+          <div class="note-content">
+            Hi there! I'm here to help you take notes. You can type questions or record your lecture, and I'll help summarize and quiz you on it. What would you like to chat about?
+          </div>
+          <div class="note-meta">Ace • Just now</div>
         </div>
-        <div class="note-meta">Gemini • Just now</div>
+      </div>
+      
+      <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div style="margin-left: 10px;">Thinking...</div>
+      </div>
+      
+      <div class="input-area">
+        <input type="text" class="note-input" id="noteInput" placeholder="Write your note here..." autocomplete="off">
+        <button class="send-button" id="sendBtn">✏️</button>
+      </div>
+      
+      <div class="voice-controls">
+        <button class="voice-button record-button" id="startVoiceBtn">🎤 Start Recording Lecture</button>
+        <button class="voice-button stop-button" id="stopVoiceBtn" disabled>⏹️ Stop & Process</button>
       </div>
     </div>
     
-    <div class="typing-indicator" id="typingIndicator">
-      <div class="typing-dots">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div style="margin-left: 10px;">Thinking...</div>
-    </div>
-    
-    <div class="input-area">
-      <input type="text" class="note-input" id="noteInput" placeholder="Write your note here..." autocomplete="off">
-      <button class="send-button" id="sendBtn">✏️</button>
-    </div>
-    
-    <div class="voice-controls">
-      <button class="voice-button record-button" id="startVoiceBtn">🎤 Start Recording Lecture</button>
-      <button class="voice-button stop-button" id="stopVoiceBtn" disabled>⏹️ Stop & Process</button>
-    </div>
+    <button id="exportPdfBtn" class="export-button">⬇️ Export Notes as PDF</button>
   </div>
 
+
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script>
     const notesContent = document.getElementById("notesContent");
     const noteInput = document.getElementById("noteInput");
@@ -590,7 +658,7 @@
       if (metadata) {
         metaDiv.textContent = metadata;
       } else {
-        metaDiv.textContent = isUser ? "You • " + formatTime() : "Gemini • " + formatTime();
+        metaDiv.textContent = isUser ? "You • " + formatTime() : "Ace • " + formatTime();
       }
       
       noteDiv.appendChild(contentDiv);
@@ -915,6 +983,161 @@
       const randomRotate = (Math.random() * 2) - 1; // -1 to 1 degrees
       note.style.transform = `rotate(${randomRotate}deg)`;
     });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Replace the entire PDF export section with this:
+
+document.getElementById("exportPdfBtn").addEventListener("click", () => {
+  // Clone the notes content to avoid modifying the original
+  const content = document.getElementById("notesContent").cloneNode(true);
+  
+  // Remove interactive elements
+  content.querySelectorAll('button, input, .typing-indicator, .transcript-indicator').forEach(el => el.remove());
+  
+  // Create a clean container for PDF content
+  const pdfContainer = document.createElement('div');
+  pdfContainer.style.cssText = 'padding: 20px; background: white; color: #000000; font-family: Arial, sans-serif;';
+  
+  // Add title
+  const title = document.createElement('div');
+  title.style.cssText = 'text-align:center; margin-bottom:30px;';
+  title.innerHTML = `
+    <h1 style="color:#000000; font-size:24px; margin-bottom:10px;">📝 Lecture Notes</h1>
+    <div style="color:#333333; font-size:14px;">
+      Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}
+    </div>
+    <hr style="margin:20px 0; border:1px solid #cccccc;" />
+  `;
+  pdfContainer.appendChild(title);
+  
+  // Process each note and create clean PDF versions
+  content.querySelectorAll('.note').forEach(note => {
+    const noteContent = note.querySelector('.note-content')?.textContent;
+    const noteMeta = note.querySelector('.note-meta')?.textContent;
+    const isUser = note.classList.contains('user-note');
+    const isAI = note.classList.contains('ai-note');
+    const isQuiz = note.classList.contains('quiz-note');
+    
+    if (!noteContent) return;
+    
+    const pdfNote = document.createElement('div');
+    pdfNote.style.cssText = `
+      margin-bottom: 20px;
+      padding: 15px;
+      border-left: 4px solid ${isUser ? '#1976d2' : (isQuiz ? '#8e24aa' : '#ff9800')};
+      background: ${isUser ? '#f0f7ff' : (isQuiz ? '#f5f0ff' : '#fff8e1')};
+      border-radius: 4px;
+      color: #000000;
+      font-size: 14px;
+      line-height: 1.5;
+      page-break-inside: avoid;
+    `;
+    
+    // Add note type indicator
+    const typeIndicator = document.createElement('div');
+    typeIndicator.style.cssText = 'font-size: 12px; color: #555555; margin-bottom: 8px; font-weight: bold;';
+    
+    if (isUser) {
+      typeIndicator.innerHTML = '📤 <strong>Your Note</strong>';
+    } else if (isQuiz) {
+      typeIndicator.innerHTML = '📚 <strong>Quiz Question</strong>';
+    } else {
+      typeIndicator.innerHTML = '🤖 <strong>AI Response</strong>';
+    }
+    pdfNote.appendChild(typeIndicator);
+    
+    // Add note content with forced dark text
+    const contentDiv = document.createElement('div');
+    contentDiv.style.cssText = 'color: #000000 !important; font-size: 14px !important; margin-bottom: 10px;';
+    contentDiv.textContent = noteContent;
+    pdfNote.appendChild(contentDiv);
+    
+    // Add metadata with dark text
+    if (noteMeta) {
+      const metaDiv = document.createElement('div');
+      metaDiv.style.cssText = 'font-size: 11px !important; color: #666666 !important; text-align: right; border-top: 1px solid #eeeeee; padding-top: 8px; margin-top: 8px;';
+      metaDiv.textContent = noteMeta;
+      pdfNote.appendChild(metaDiv);
+    }
+    
+    // Handle quiz options if present
+    if (isQuiz) {
+      const quizOptions = note.querySelectorAll('.quiz-option');
+      if (quizOptions.length > 0) {
+        const optionsDiv = document.createElement('div');
+        optionsDiv.style.cssText = 'margin-top: 10px; padding-left: 15px;';
+        
+        quizOptions.forEach(option => {
+          const optionDiv = document.createElement('div');
+          optionDiv.style.cssText = 'color: #000000 !important; margin: 5px 0; padding: 5px 10px; border: 1px solid #cccccc; border-radius: 3px; background: #f9f9f9;';
+          optionDiv.textContent = option.textContent;
+          optionsDiv.appendChild(optionDiv);
+        });
+        
+        pdfNote.appendChild(optionsDiv);
+      }
+    }
+    
+    pdfContainer.appendChild(pdfNote);
+  });
+  
+  // Add footer
+  const footer = document.createElement('div');
+  footer.style.cssText = 'margin-top: 40px; padding-top: 20px; border-top: 1px solid #cccccc; text-align: center; font-size: 12px; color: #666666;';
+  footer.innerHTML = `
+    <div>Generated by Passing Notes App</div>
+    <div>Total Notes: ${content.querySelectorAll('.note').length}</div>
+  `;
+  pdfContainer.appendChild(footer);
+  
+  // Configure html2pdf with settings optimized for text visibility
+  const options = {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: `lecture-notes-${new Date().toISOString().slice(0,10)}.pdf`,
+    image: { 
+      type: 'jpeg', 
+      quality: 0.98 
+    },
+    html2canvas: { 
+      scale: 2,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+      onclone: function(clonedDoc) {
+        // Ensure everything is visible in the cloned document
+        clonedDoc.body.style.color = '#000000';
+        clonedDoc.body.style.backgroundColor = '#ffffff';
+        clonedDoc.querySelectorAll('*').forEach(el => {
+          el.style.color = '#000000';
+        });
+      }
+    },
+    jsPDF: { 
+      unit: 'in', 
+      format: 'letter', 
+      orientation: 'portrait' 
+    }
+  };
+  
+  // Generate PDF from our clean container
+  html2pdf().set(options).from(pdfContainer).save();
+});
+
   </script>
+  
+
 </body>
 </html>
