@@ -1,209 +1,223 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Text Chat</title>
+  <title>Passing Notes</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Gochi+Hand&family=Indie+Flower&family=Nanum+Pen+Script&family=Shadows+Into+Light&display=swap');
+    
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
     }
     
     body {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background-color: #f5e9d8;
+      background-image: 
+        radial-gradient(#e0d3b8 1px, transparent 1px),
+        radial-gradient(#e0d3b8 1px, transparent 1px);
+      background-size: 40px 40px;
+      background-position: 0 0, 20px 20px;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
+      font-family: 'Caveat', cursive;
     }
     
-    .chat-container {
+    .notes-container {
       width: 100%;
-      max-width: 400px;
-      height: 80vh;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      max-width: 600px;
+      height: 85vh;
+      background: #fffef0;
+      border-radius: 5px;
+      box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.15),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.8);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      position: relative;
+      border: 1px solid #d4c9b1;
     }
     
-    .chat-header {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      padding: 20px;
+    /* Notebook paper lines */
+    .notes-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 60px;
+      right: 0;
+      bottom: 0;
+      background: repeating-linear-gradient(
+        #fffef0,
+        #fffef0 28px,
+        #e0e0e0 28px,
+        #e0e0e0 29px
+      );
+      pointer-events: none;
+      opacity: 0.3;
+      z-index: 0;
+    }
+    
+    .notes-header {
+      background: linear-gradient(to bottom, #8b7355, #6d5c42);
+      color: #fffef0;
+      padding: 15px 20px;
       text-align: center;
       position: relative;
+      z-index: 1;
+      border-bottom: 2px solid #5a4a34;
     }
     
-    .chat-header h2 {
-      font-size: 1.2rem;
-      font-weight: 600;
+    .notes-header h2 {
+      font-family: 'Shadows Into Light', cursive;
+      font-size: 1.8rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
     
-    .chat-header .status {
-      font-size: 0.8rem;
+    .notes-header .status {
+      font-family: 'Indie Flower', cursive;
+      font-size: 0.9rem;
       opacity: 0.9;
-      margin-top: 4px;
+      margin-top: 2px;
     }
     
-    .chat-messages {
+    .notes-content {
       flex: 1;
       padding: 20px;
       overflow-y: auto;
-      background: #f8f9fa;
       display: flex;
       flex-direction: column;
-      gap: 12px;
-    }
-    
-    .message {
-      max-width: 80%;
-      padding: 12px 16px;
-      border-radius: 18px;
-      line-height: 1.4;
-      font-size: 0.95rem;
+      gap: 20px;
       position: relative;
-      animation: fadeIn 0.3s ease;
+      z-index: 1;
+      background: transparent;
     }
     
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .note {
+      max-width: 85%;
+      padding: 15px 20px;
+      line-height: 1.5;
+      font-size: 1.3rem;
+      position: relative;
+      animation: slideIn 0.4s ease;
+      word-wrap: break-word;
+      border-radius: 3px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+      transform: rotate(-0.5deg);
+      transition: transform 0.2s ease;
     }
     
-    .user-message {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
+    .note:hover {
+      transform: rotate(0deg) scale(1.01);
+    }
+    
+    @keyframes slideIn {
+      from { 
+        opacity: 0; 
+        transform: translateY(20px) rotate(-2deg); 
+      }
+      to { 
+        opacity: 1; 
+        transform: translateY(0) rotate(-0.5deg); 
+      }
+    }
+    
+    .user-note {
+      background: #e3f2fd;
       align-self: flex-end;
-      border-bottom-right-radius: 4px;
+      border-top-right-radius: 0;
+      border: 1px solid #bbdefb;
+      transform: rotate(0.5deg);
+      font-family: 'Nanum Pen Script', cursive;
+      font-size: 1.4rem;
+      color: #1565c0;
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     }
     
-    .ai-message {
-      background: white;
-      color: #333;
+    .user-note:hover {
+      transform: rotate(0deg) scale(1.01);
+    }
+    
+    .ai-note {
+      background: #fff8e1;
       align-self: flex-start;
-      border: 1px solid #e0e0e0;
-      border-bottom-left-radius: 4px;
+      border-top-left-radius: 0;
+      border: 1px solid #ffecb3;
+      font-family: 'Gochi Hand', cursive;
+      font-size: 1.35rem;
+      color: #5d4037;
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.1);
     }
     
-    .message-time {
-      font-size: 0.7rem;
+    .note-content {
+      margin-bottom: 8px;
+      line-height: 1.8;
+    }
+    
+    .note-meta {
+      font-family: 'Indie Flower', cursive;
+      font-size: 0.9rem;
       opacity: 0.7;
-      margin-top: 4px;
       text-align: right;
+      border-top: 1px dashed rgba(0, 0, 0, 0.1);
+      padding-top: 5px;
+      margin-top: 5px;
     }
     
-    .input-area {
-      padding: 16px;
-      background: white;
-      border-top: 1px solid #e0e0e0;
-      display: flex;
-      gap: 8px;
-      align-items: center;
+    .note-meta::before {
+      content: '~ ';
     }
     
-    .message-input {
-      flex: 1;
-      padding: 12px 16px;
-      border: 2px solid #e0e0e0;
-      border-radius: 24px;
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color 0.3s;
-    }
-    
-    .message-input:focus {
-      border-color: #667eea;
-    }
-    
-    .send-button {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      color: white;
-      border: none;
-      width: 44px;
-      height: 44px;
+    /* Pin effect for notes */
+    .note::before {
+      content: '';
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      background: radial-gradient(circle, #fff, #ccc, #999);
       border-radius: 50%;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      transition: transform 0.2s;
+      top: 10px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
     
-    .send-button:hover {
-      transform: scale(1.05);
+    .user-note::before {
+      right: 10px;
+      background: radial-gradient(circle, #bbdefb, #64b5f6, #1976d2);
     }
     
-    .send-button:active {
-      transform: scale(0.95);
-    }
-    
-    .voice-controls {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-      justify-content: center;
-    }
-    
-    .voice-button {
-      padding: 8px 16px;
-      border: none;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      cursor: pointer;
-      transition: all 0.3s;
-      font-weight: 500;
-    }
-    
-    .record-button {
-      background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
-      color: white;
-    }
-    
-    .record-button.recording {
-      animation: pulse 1.5s infinite;
-      background: linear-gradient(135deg, #ff4757 0%, #ff3838 100%);
-    }
-    
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.7; }
-      100% { opacity: 1; }
-    }
-    
-    .stop-button {
-      background: #e0e0e0;
-      color: #666;
-    }
-    
-    .stop-button:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    .ai-note::before {
+      left: 10px;
+      background: radial-gradient(circle, #ffecb3, #ffd54f, #ff9800);
     }
     
     .transcript-indicator {
       text-align: center;
-      font-size: 0.8rem;
-      color: #666;
-      padding: 8px;
-      background: #f0f0f0;
-      border-radius: 12px;
-      margin: 8px 16px;
+      font-family: 'Indie Flower', cursive;
+      font-size: 1rem;
+      color: #5d4037;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 5px;
+      margin: 0 20px;
       display: none;
+      border: 1px dashed #8d6e63;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      position: relative;
+      z-index: 2;
     }
     
     .transcript-indicator.active {
       display: block;
-      animation: slideUp 0.3s ease;
+      animation: fadeInUp 0.3s ease;
     }
     
-    @keyframes slideUp {
+    @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
@@ -211,11 +225,15 @@
     .typing-indicator {
       display: none;
       align-self: flex-start;
-      background: white;
-      padding: 12px 16px;
-      border-radius: 18px;
-      border: 1px solid #e0e0e0;
-      margin-bottom: 12px;
+      background: rgba(255, 248, 225, 0.9);
+      padding: 15px 20px;
+      border-radius: 5px;
+      border: 1px solid #ffecb3;
+      margin-bottom: 10px;
+      font-family: 'Gochi Hand', cursive;
+      font-size: 1.2rem;
+      color: #5d4037;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
     }
     
     .typing-indicator.active {
@@ -224,78 +242,300 @@
     
     .typing-dots {
       display: flex;
-      gap: 4px;
+      gap: 5px;
     }
     
     .typing-dots span {
-      width: 6px;
-      height: 6px;
-      background: #999;
+      width: 8px;
+      height: 8px;
+      background: #8d6e63;
       border-radius: 50%;
-      animation: typing 1.4s infinite;
+      animation: handwritingTyping 1.4s infinite;
     }
     
     .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
     .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
     
-    @keyframes typing {
+    @keyframes handwritingTyping {
       0%, 60%, 100% { transform: translateY(0); }
-      30% { transform: translateY(-6px); }
+      30% { transform: translateY(-8px); }
+    }
+    
+    .input-area {
+      padding: 15px 20px;
+      background: rgba(255, 254, 240, 0.95);
+      border-top: 2px solid #d4c9b1;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    .note-input {
+      flex: 1;
+      padding: 12px 15px;
+      border: 2px solid #d4c9b1;
+      border-radius: 5px;
+      font-family: 'Nanum Pen Script', cursive;
+      font-size: 1.3rem;
+      outline: none;
+      background: #fffef7;
+      color: #5d4037;
+      box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s;
+    }
+    
+    .note-input:focus {
+      border-color: #8b7355;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(139, 115, 85, 0.2);
+    }
+    
+    .note-input::placeholder {
+      color: #a1887f;
+      font-style: italic;
+    }
+    
+    .send-button {
+      background: linear-gradient(to bottom, #8b7355, #6d5c42);
+      color: #fffef0;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      transition: all 0.2s;
+      font-family: 'Shadows Into Light', cursive;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .send-button:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .send-button:active {
+      transform: scale(0.95);
+    }
+    
+    .voice-controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      justify-content: center;
+      padding: 0 20px 15px;
+      background: rgba(255, 254, 240, 0.95);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .voice-button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 25px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Indie Flower', cursive;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    .record-button {
+      background: linear-gradient(to bottom, #e57373, #d32f2f);
+      color: white;
+      border: 2px solid #c62828;
+    }
+    
+    .record-button.recording {
+      animation: pulse 1.5s infinite;
+      background: linear-gradient(to bottom, #f44336, #b71c1c);
+      box-shadow: 0 0 10px rgba(244, 67, 54, 0.5);
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    
+    .stop-button {
+      background: linear-gradient(to bottom, #78909c, #455a64);
+      color: white;
+      border: 2px solid #37474f;
+    }
+    
+    .stop-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    .voice-button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    /* Quiz styling */
+    .quiz-note {
+      background: #f3e5f5;
+      border: 1px solid #ce93d8;
+      font-family: 'Gochi Hand', cursive;
+    }
+    
+    .quiz-note::before {
+      background: radial-gradient(circle, #f3e5f5, #ce93d8, #8e24aa);
+    }
+    
+    .quiz-question {
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
+    
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    
+    .quiz-option {
+      padding: 8px 12px;
+      border: 1px solid #ba68c8;
+      border-radius: 3px;
+      background: #f3e5f5;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Nanum Pen Script', cursive;
+      font-size: 1.2rem;
+    }
+    
+    .quiz-option:hover {
+      background: #e1bee7;
+      transform: translateX(5px);
+    }
+    
+    .quiz-option.correct {
+      background: #c8e6c9;
+      border-color: #4caf50;
+      color: #1b5e20;
+    }
+    
+    .quiz-option.incorrect {
+      background: #ffcdd2;
+      border-color: #f44336;
+      color: #b71c1c;
     }
     
     /* Scrollbar styling */
-    .chat-messages::-webkit-scrollbar {
-      width: 6px;
+    .notes-content::-webkit-scrollbar {
+      width: 8px;
     }
     
-    .chat-messages::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 3px;
+    .notes-content::-webkit-scrollbar-track {
+      background: rgba(212, 201, 177, 0.3);
+      border-radius: 4px;
     }
     
-    .chat-messages::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 3px;
+    .notes-content::-webkit-scrollbar-thumb {
+      background: linear-gradient(to bottom, #8b7355, #6d5c42);
+      border-radius: 4px;
     }
     
-    .chat-messages::-webkit-scrollbar-thumb:hover {
-      background: #a1a1a1;
+    .notes-content::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(to bottom, #6d5c42, #5a4a34);
+    }
+    
+    /* Tear effect at top of notes */
+    .notes-content::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 15px;
+      background: linear-gradient(to right, 
+        transparent 0%, 
+        rgba(212, 201, 177, 0.5) 10%, 
+        rgba(212, 201, 177, 0.5) 90%, 
+        transparent 100%);
+      z-index: 1;
     }
     
     /* Responsive adjustments */
-    @media (max-width: 480px) {
+    @media (max-width: 768px) {
       body {
         padding: 10px;
         height: 100vh;
       }
       
-      .chat-container {
+      .notes-container {
         height: 90vh;
         max-width: 100%;
       }
       
-      .message {
-        max-width: 85%;
+      .note {
+        max-width: 90%;
+        font-size: 1.2rem;
+      }
+      
+      .voice-controls {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .voice-button {
+        width: 100%;
+        max-width: 200px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .notes-header h2 {
+        font-size: 1.5rem;
+      }
+      
+      .note {
+        max-width: 95%;
+        padding: 12px 15px;
+      }
+      
+      .note-input {
+        font-size: 1.2rem;
+        padding: 10px 12px;
+      }
+      
+      .notes-container::before {
+        left: 40px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="chat-container">
-    <div class="chat-header">
-      <h2>💬 Passing Notes</h2>
-      <div class="status">Online • Gemini AI</div>
+  <div class="notes-container">
+    <div class="notes-header">
+      <h2>📝 Passing Notes</h2>
+      <div class="status">Whispering with Gemini AI • Class is in session</div>
     </div>
     
     <div class="transcript-indicator" id="transcriptIndicator">
-      🎤 Recording transcript...
+      ✏️ Recording lecture notes...
     </div>
     
-    <div class="chat-messages" id="chatMessages">
-      <!-- Messages will appear here -->
-      <div class="message ai-message">
-        Hi! I'm here to help. You can type a question or record your lecture. What would you like to chat about?
-        <div class="message-time">Just now</div>
+    <div class="notes-content" id="notesContent">
+      <!-- Notes will appear here -->
+      <div class="note ai-note">
+        <div class="note-content">
+          Hi there! I'm here to help you take notes. You can type questions or record your lecture, and I'll help summarize and quiz you on it. What would you like to chat about?
+        </div>
+        <div class="note-meta">Gemini • Just now</div>
       </div>
     </div>
     
@@ -305,22 +545,23 @@
         <span></span>
         <span></span>
       </div>
+      <div style="margin-left: 10px;">Thinking...</div>
     </div>
     
     <div class="input-area">
-      <input type="text" class="message-input" id="messageInput" placeholder="Type your message..." autocomplete="off">
-      <button class="send-button" id="sendBtn">➤</button>
+      <input type="text" class="note-input" id="noteInput" placeholder="Write your note here..." autocomplete="off">
+      <button class="send-button" id="sendBtn">✏️</button>
     </div>
     
     <div class="voice-controls">
-      <button class="voice-button record-button" id="startVoiceBtn">🎤 Start Recording</button>
-      <button class="voice-button stop-button" id="stopVoiceBtn" disabled>⏹️ Stop</button>
+      <button class="voice-button record-button" id="startVoiceBtn">🎤 Start Recording Lecture</button>
+      <button class="voice-button stop-button" id="stopVoiceBtn" disabled>⏹️ Stop & Process</button>
     </div>
   </div>
 
   <script>
-    const chatMessages = document.getElementById("chatMessages");
-    const messageInput = document.getElementById("messageInput");
+    const notesContent = document.getElementById("notesContent");
+    const noteInput = document.getElementById("noteInput");
     const sendBtn = document.getElementById("sendBtn");
     const startVoiceBtn = document.getElementById("startVoiceBtn");
     const stopVoiceBtn = document.getElementById("stopVoiceBtn");
@@ -330,28 +571,39 @@
     // -------------------- Utility Functions --------------------
     function formatTime() {
       const now = new Date();
-      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const dateStr = now.toLocaleDateString([], { month: 'short', day: 'numeric' });
+      return `${timeStr} • ${dateStr}`;
     }
 
-    function addMessage(text, isUser = false) {
-      const messageDiv = document.createElement("div");
-      messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+    function addNote(text, isUser = false, metadata = null) {
+      const noteDiv = document.createElement("div");
+      noteDiv.className = `note ${isUser ? 'user-note' : 'ai-note'}`;
       
-      const timeDiv = document.createElement("div");
-      timeDiv.className = "message-time";
-      timeDiv.textContent = formatTime();
+      const contentDiv = document.createElement("div");
+      contentDiv.className = "note-content";
+      contentDiv.textContent = text;
       
-      messageDiv.textContent = text;
-      messageDiv.appendChild(timeDiv);
+      const metaDiv = document.createElement("div");
+      metaDiv.className = "note-meta";
       
-      chatMessages.appendChild(messageDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
+      if (metadata) {
+        metaDiv.textContent = metadata;
+      } else {
+        metaDiv.textContent = isUser ? "You • " + formatTime() : "Gemini • " + formatTime();
+      }
+      
+      noteDiv.appendChild(contentDiv);
+      noteDiv.appendChild(metaDiv);
+      
+      notesContent.appendChild(noteDiv);
+      notesContent.scrollTop = notesContent.scrollHeight;
     }
 
     function showTypingIndicator(show) {
       typingIndicator.classList.toggle("active", show);
       if (show) {
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        notesContent.scrollTop = notesContent.scrollHeight;
       }
     }
 
@@ -362,6 +614,7 @@
     recognition.interimResults = true;
 
     let transcriptBuffer = "";
+    let fullLectureTranscript = ""; 
     let isRecording = false;
 
     recognition.onresult = (event) => {
@@ -376,22 +629,32 @@
 
       if (newText) {
         transcriptBuffer += newText;
+        fullLectureTranscript += newText;
+
         if (!transcriptIndicator.classList.contains("active")) {
           transcriptIndicator.classList.add("active");
         }
+        // Update indicator with transcript preview
+        const preview = transcriptBuffer.length > 100 
+          ? transcriptBuffer.substring(0, 100) + "..."
+          : transcriptBuffer;
+        transcriptIndicator.textContent = `✏️ Recording: ${preview}`;
       }
     };
 
     recognition.onstart = () => {
+      console.log("Recording started");
+      isRecording = true;
       startVoiceBtn.classList.add("recording");
-      startVoiceBtn.textContent = "🔴 Recording...";
-      transcriptIndicator.textContent = "🎤 Listening...";
+      startVoiceBtn.textContent = "🔴 Recording Lecture...";
+      transcriptIndicator.textContent = "🎤 Listening to lecture...";
       transcriptIndicator.classList.add("active");
     };
 
     recognition.onend = () => {
+      console.log("Recording ended");
       startVoiceBtn.classList.remove("recording");
-      startVoiceBtn.textContent = "🎤 Start Recording";
+      startVoiceBtn.textContent = "🎤 Start Recording Lecture";
       
       if (isRecording) {
         setTimeout(() => {
@@ -414,6 +677,9 @@
       setTimeout(() => {
         transcriptIndicator.classList.remove("active");
       }, 3000);
+      isRecording = false;
+      startVoiceBtn.disabled = false;
+      stopVoiceBtn.disabled = true;
     };
 
     startVoiceBtn.addEventListener("click", () => {
@@ -421,33 +687,47 @@
       
       try {
         isRecording = true;
+        transcriptBuffer = "";
         recognition.start();
         startVoiceBtn.disabled = true;
         stopVoiceBtn.disabled = false;
       } catch (e) {
         console.error("Failed to start recording:", e);
         isRecording = false;
+        startVoiceBtn.disabled = false;
+        alert("Please allow microphone access to record lectures.");
       }
     });
 
     stopVoiceBtn.addEventListener("click", () => {
-    isRecording = false;
-    recognition.stop();
-    startVoiceBtn.disabled = false;
-    stopVoiceBtn.disabled = true;
-    sendSummary();
-    generateQuiz(transcriptBuffer); 
-});
+      if (!isRecording) return;
+      
+      isRecording = false;
+      recognition.stop();
+      startVoiceBtn.disabled = false;
+      stopVoiceBtn.disabled = true;
+      
+      // Process the transcript
+      setTimeout(async () => {
+        if (transcriptBuffer.trim()) {
+        await sendSummary(transcriptBuffer);
+        transcriptBuffer = "";
+      }
 
+      await generateQuiz(fullLectureTranscript);
+
+        transcriptIndicator.classList.remove("active");
+      }, 500);
+    });
 
     // -------------------- Summary sender --------------------
-    async function sendSummary() {
+    async function sendSummary(chunk) {
       if (!transcriptBuffer.trim()) {
         transcriptIndicator.classList.remove("active");
         return;
       }
 
-      addMessage(transcriptBuffer, true);
+      addNote(transcriptBuffer, true, "Lecture notes • " + formatTime());
       showTypingIndicator(true);
       transcriptIndicator.classList.remove("active");
 
@@ -455,7 +735,11 @@
         const res = await fetch("http://127.0.0.1:5000/summary", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: transcriptBuffer })
+          body: JSON.stringify({
+            full_text: fullLectureTranscript,
+            new_chunk: chunk
+          })
+
         });
 
         showTypingIndicator(false);
@@ -465,102 +749,140 @@
         }
 
         const data = await res.json();
-        addMessage(data.reply, false);
-        transcriptBuffer = "";
+        addNote(data.reply, false, "Summary • " + formatTime());
 
       } catch (err) {
         showTypingIndicator(false);
-        addMessage(`Sorry, I encountered an error: ${err.message}`, false);
+        addNote(`Oops, I ran into an issue: ${err.message}`, false, "Error • " + formatTime());
         console.error("Summary error:", err);
       }
     }
 
-
-// -------------------- Quiz Creator --------------------
+    // -------------------- Quiz Creator --------------------
     async function generateQuiz(transcript) {
-  if (!transcript.trim()) return;
+      if (!transcript.trim()) return;
 
-  showTypingIndicator(true);
+      showTypingIndicator(true);
 
-  try {
-    const res = await fetch("http://127.0.0.1:5000/quiz", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text: transcript })
-    });
+      try {
+        const res = await fetch("http://127.0.0.1:5000/quiz", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: transcript })
+        });
 
-    showTypingIndicator(false);
+        showTypingIndicator(false);
 
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
 
-    if (data.error) {
-      addMessage("Quiz generation failed: " + data.error, false);
-      console.error(data);
-      return;
+        if (data.error) {
+          addNote("Quiz didn't work out: " + data.error, false, "Oops • " + formatTime());
+          console.error(data);
+          return;
+        }
+
+        addNote("📚 Pop quiz from today's notes!", false, "Quiz Time! • " + formatTime());
+
+        // Render quiz
+        const quizData = data.quiz || [];
+        quizData.forEach((q, idx) => {
+          const quizNote = document.createElement("div");
+          quizNote.className = "note quiz-note";
+          
+          const questionDiv = document.createElement("div");
+          questionDiv.className = "quiz-question";
+          questionDiv.textContent = `Q${idx + 1}: ${q.question}`;
+          questionDiv.style.fontSize = "1.3rem";
+          questionDiv.style.marginBottom = "15px";
+          
+          const optionsDiv = document.createElement("div");
+          optionsDiv.className = "quiz-options";
+          
+          const options = q.options || ["A", "B", "C", "D"];
+          const answer = q.answer || "A";
+          
+          options.forEach(option => {
+            const optionBtn = document.createElement("button");
+            optionBtn.className = "quiz-option";
+            optionBtn.textContent = option;
+            
+            optionBtn.addEventListener("click", () => {
+              // Disable all options
+              optionsDiv.querySelectorAll('.quiz-option').forEach(btn => {
+                btn.disabled = true;
+                btn.style.cursor = "default";
+              });
+              
+              if (option === answer) {
+                optionBtn.classList.add("correct");
+                optionBtn.innerHTML = `✓ ${option} (Correct!)`;
+              } else {
+                optionBtn.classList.add("incorrect");
+                optionBtn.innerHTML = `✗ ${option}`;
+                
+                // Highlight correct answer
+                optionsDiv.querySelectorAll('.quiz-option').forEach(btn => {
+                  if (btn.textContent.includes(answer) || btn.textContent === answer) {
+                    btn.classList.add("correct");
+                    btn.innerHTML = `✓ ${answer} (Correct answer)`;
+                  }
+                });
+              }
+            });
+            
+            optionsDiv.appendChild(optionBtn);
+          });
+          
+          quizNote.appendChild(questionDiv);
+          quizNote.appendChild(optionsDiv);
+          
+          const metaDiv = document.createElement("div");
+          metaDiv.className = "note-meta";
+          metaDiv.textContent = `Question ${idx + 1} of ${quizData.length}`;
+          quizNote.appendChild(metaDiv);
+          
+          notesContent.appendChild(quizNote);
+          notesContent.scrollTop = notesContent.scrollHeight;
+        });
+
+      } catch (err) {
+        showTypingIndicator(false);
+        addNote(`Quiz didn't load: ${err.message}`, false, "Error • " + formatTime());
+        console.error("Quiz error:", err);
+      }
     }
 
-    addMessage("📚 Here's a quiz from the transcript!", false);
-
-    // Render quiz
-    data.quiz.forEach((q, idx) => {
-      const questionDiv = document.createElement("div");
-      questionDiv.className = "ai-message";
-      questionDiv.style.marginBottom = "12px";
-
-      const qText = document.createElement("div");
-      qText.textContent = `Q${idx + 1}: ${q.question}`;
-      questionDiv.appendChild(qText);
-
-      q.options.forEach(option => {
-        const btn = document.createElement("button");
-        btn.textContent = option;
-        btn.style.margin = "4px";
-        btn.addEventListener("click", () => {
-          if (option === q.answer) {
-            btn.style.backgroundColor = "#4CAF50"; // correct
-          } else {
-            btn.style.backgroundColor = "#f44336"; // wrong
-          }
-        });
-        questionDiv.appendChild(btn);
-      });
-
-      chatMessages.appendChild(questionDiv);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    });
-
-  } catch (err) {
-    showTypingIndicator(false);
-    addMessage(`Error generating quiz: ${err.message}`, false);
-    console.error(err);
-  }
-}
-
-
-
-    // -------------------- Auto-summary every 60 seconds --------------------
+    // -------------------- Auto-summary every 30 seconds --------------------
     setInterval(() => {
-      if (transcriptBuffer.trim() && isRecording) {
-        sendSummary();
-      }
-    }, 30000);
+  if (transcriptBuffer.trim() && isRecording) {
+    (async () => {
+      await sendSummary(transcriptBuffer);
+      transcriptBuffer = "";
+    })();
+  }
+}, 15000);
 
-    // -------------------- Manual chat messages --------------------
-    async function sendMessage() {
-      const msg = messageInput.value.trim();
-      if (!msg) return;
 
-      addMessage(msg, true);
-      messageInput.value = "";
+    // -------------------- Manual notes --------------------
+    async function sendNote() {
+      const noteText = noteInput.value.trim();
+      if (!noteText) return;
+
+      addNote(noteText, true);
+      noteInput.value = "";
       showTypingIndicator(true);
 
       try {
         const res = await fetch("http://127.0.0.1:5000/send", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text: msg })
-        });
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: noteText,
+          full_text: fullLectureTranscript
+        })
+      });
+
 
         showTypingIndicator(false);
 
@@ -569,25 +891,30 @@
         }
 
         const data = await res.json();
-        addMessage(data.reply, false);
+        addNote(data.reply, false);
 
       } catch (err) {
         showTypingIndicator(false);
-        addMessage(`Sorry, I encountered an error: ${err.message}`, false);
-        console.error("Message error:", err);
+        addNote(`Hmm, something went wrong: ${err.message}`, false, "Error • " + formatTime());
+        console.error("Note error:", err);
       }
     }
 
-    sendBtn.addEventListener("click", sendMessage);
-    messageInput.addEventListener("keypress", (e) => {
+    sendBtn.addEventListener("click", sendNote);
+    noteInput.addEventListener("keypress", (e) => {
       if (e.key === "Enter") {
-        sendMessage();
+        sendNote();
       }
     });
 
     // Focus input on load
-    messageInput.focus();
+    noteInput.focus();
+    
+    // Add some random rotation to existing notes for realistic look
+    document.querySelectorAll('.note').forEach(note => {
+      const randomRotate = (Math.random() * 2) - 1; // -1 to 1 degrees
+      note.style.transform = `rotate(${randomRotate}deg)`;
+    });
   </script>
 </body>
 </html>
-
