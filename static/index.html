@@ -800,7 +800,7 @@
       transcriptIndicator.classList.remove("active");
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/summary", {
+        const res = await fetch("/summary", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -833,7 +833,7 @@
       showTypingIndicator(true);
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/quiz", {
+        const res = await fetch("/quiz", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text: transcript })
@@ -942,7 +942,7 @@
       showTypingIndicator(true);
 
       try {
-        const res = await fetch("http://127.0.0.1:5000/send", {
+        const res = await fetch("/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
