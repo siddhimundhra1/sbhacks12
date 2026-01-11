@@ -18,7 +18,7 @@ def gemini_prompt(prompt):
         }
         url = (
             "https://generativelanguage.googleapis.com/v1beta/"
-            f"models/gemini-3-flash-preview:generateContent?key={GEMINI_KEY}"
+            f"models/gemini-2.5-flash:generateContent?key={GEMINI_KEY}"
         )
         
         response = requests.post(url, headers=headers, json=completion)
@@ -57,19 +57,67 @@ def gemini_prompt(prompt):
 def send_message():
     data = request.json
     text = data.get("text", "")
+    full_text = data.get("full_text", "")
     gemini_response = gemini_prompt(
-        "Respond to this prompt like it's a text. Keep it concise (~200 chars max):\n" + text
-    )
+    f"""
+Answer the user's question using the lecture context.
+
+Task:
+- Give a direct, correct answer.
+- If the lecture is unclear or contradictory, say so.
+
+Style:
+- Casual, conversational, mildly gossipy.
+- Friendly but not dramatic.
+- No emojis unless it truly fits (0–1 max).
+
+Length:
+- 2–3 sentences.
+- ~200 characters max.
+
+User question:
+{text}
+
+Lecture context:
+{full_text}
+"""
+)
+
     return jsonify({"reply": gemini_response})
 
 
 @app.route("/summary", methods=["POST"])
 def summarize():
-    data = request.json
-    text = data.get("text", "")
+    full_text = request.json.get("full_text", "")
+    new_chunk = request.json.get("new_chunk", "")
     gemini_response = gemini_prompt(
-        "Respond to this transcript like it's a text. Give all important points:\n" + text
-    )
+    f"""
+You are generating LIVE lecture side-notes, not a summary.
+
+Task:
+- React ONLY to the NEW chunk below.
+- Point out: new facts, repetition, errors, or clarifications.
+- Do NOT restate everything.
+
+Style:
+- Casual, dry, slightly gossipy.
+- Think: smart friend whispering during class.
+- No ALL CAPS.
+- Max 1 emoji, optional.
+- No fake drama or invented stakes.
+
+Length:
+- 1–3 short sentences.
+- ~150–200 characters max.
+
+New lecture chunk:
+{new_chunk}
+
+Previous lecture (context only, do not summarize):
+{full_text}
+"""
+)
+
     print (gemini_response)
     return jsonify({"reply": gemini_response})
 
