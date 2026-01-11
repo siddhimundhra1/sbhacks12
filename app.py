@@ -76,7 +76,7 @@ Style:
 
 Length:
 - 2–3 sentences.
-- ~200 characters max.
+- ~200 characters max (unless more is required. This is flexible based off of user question.).
 
 User question:
 {text}
@@ -96,10 +96,10 @@ def summarize():
 
     response = openrouter_prompt(
         f"""
-You are generating LIVE lecture side-notes, not a summary.
+You are generating LIVE lecture side-notes.
 
 Task:
-- React ONLY to the NEW chunk below.
+- React ONLY to the NEW chunk below. Explain/summarize the new information in context of the entire lecture (and add in cool facts too). Add in interesting outside information if relevant and attention-grabbing. 
 - Point out: new facts, repetition, errors, or clarifications.
 - Do NOT restate everything.
 
@@ -132,7 +132,7 @@ def quiz():
     text = data.get("text", "")
 
     prompt = f"""
-Generate a 3-question multiple choice quiz from the following transcript.
+Generate a 7-question multiple choice quiz from the following transcript.
 Return ONLY valid JSON with this exact format:
 
 {{
@@ -192,5 +192,6 @@ Important: Return ONLY the JSON object, no additional text.
 
 if __name__ == "__main__":
     app.run(port=5000)
+
 
 
